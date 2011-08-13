@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+if [[ $# -lt 1 || $# -gt 3 ]]; then
+    echo "Usage:
+    mysql-railsuser <DATABASE_NAME> <USERNAME> <PASSWORD>
+    mysql-railsuser <DATABASE_NAME> <USERANDPASS>
+    mysql-railsuser <DB_USER_AND_PASS>
+    "
+    exit
+fi
+
+if [[ $# -eq 1 ]]; then
+    database=$1
+    username=$1
+    password=$1
+elif [[ $# -eq 2 ]]; then
+    database=$1
+    username=$2
+    password=$2
+elif [[ $# -eq 3 ]]; then
+    database=$1
+    username=$2
+    password=$3
+fi
+
+mysql -u root -e "create database ${database}_development"
+sql="GRANT ALL PRIVILEGES ON ${database}_development.* TO '$username'@'localhost' IDENTIFIED BY '$password'"
+echo "$sql"
+result=$(mysql -u root -e "$sql")
+echo "got: $result"
+
+mysql -u root -e "create database ${database}_test"
+sql="GRANT ALL PRIVILEGES ON ${database}_test.* TO '$username'@'localhost' IDENTIFIED BY '$password'"
+echo "$sql"
+result=$(mysql -u root -e "$sql")
+echo "got: $result"
+
+mysql -u root -e "create database ${database}_production"
+sql="GRANT ALL PRIVILEGES ON ${database}_production.* TO '$username'@'localhost' IDENTIFIED BY '$password'"
+echo "$sql"
+result=$(mysql -u root -e "$sql")
+echo "got: $result"
